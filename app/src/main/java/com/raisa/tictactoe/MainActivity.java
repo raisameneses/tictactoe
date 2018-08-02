@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,110 +28,50 @@ public class MainActivity extends AppCompatActivity {
             gameState[position] = activePlayer;
             if (activePlayer == 0) {
                 counter.setImageResource( R.drawable.yellow );
-                if(testForWinner() == activePlayer){
-                        winnerBanner.setTextColor( Color.YELLOW );
-                        winnerBanner.setText("Yellow Wins!!!");
-                    for(int i = 0; i < gameState.length; i++){
-                        gameState[i] = this.activePlayer;
-                    }
-                }
                 activePlayer = 1;
             } else {
                 counter.setImageResource( R.drawable.red );
-                if(testForWinner() == activePlayer){
-                    winnerBanner.setTextColor(Color.RED);
-                    winnerBanner.setText("Red Wins!!!");
-                    for(int i = 0; i < gameState.length; i++){
-                        gameState[i] = this.activePlayer;
-                    }
-                }
+
                 activePlayer = 0;
 
             }
             counter.animate().translationYBy( 1000 ).setDuration( 300 );
+
+            for(int[]position : this.winningPositions){
+                if(gameState[position[0]] ==  gameState[position[1]] &&
+                        gameState[position[1]] == gameState[position[2]] &&
+                        gameState[position[0]] != -1){
+                    if( activePlayer == 1){
+                    winnerBanner.setTextColor( Color.YELLOW );
+                    winnerBanner.setText("Yellow Wins!!!");
+                  } else{
+                        winnerBanner.setTextColor( Color.RED );
+                        winnerBanner.setText("Red Wins!!!");
+                    }
+
+                    for(int i = 0; i < gameState.length; i++){
+                        gameState[i] = this.activePlayer;
+                    }
+                    break;
+                }
+            }
         }
 
     }
 
-    public int testForWinner(){
-        //no winner yet
-        int winner = -1;
-        switch (this.activePlayer){
-            case 0:
-                if (checkWinningPositions(winningPositions[0], this.activePlayer) == activePlayer ||
-                checkWinningPositions(winningPositions[1], this.activePlayer) == activePlayer ||
-                checkWinningPositions(winningPositions[2], this.activePlayer)  == activePlayer){
-                    winner = activePlayer;
-                }
-                break;
-            case 1:
-                if (checkWinningPositions(winningPositions[0], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[3], this.activePlayer) == activePlayer ){
-                    winner = activePlayer;
-                }
-                break;
-            case 2:
-                if (checkWinningPositions(winningPositions[0], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[4], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[5], this.activePlayer)  == activePlayer){
-                    winner = activePlayer;
-                }
-                break;
-            case 3:
-                if (checkWinningPositions(winningPositions[1], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[6], this.activePlayer)  == activePlayer){
-                    winner = activePlayer;
-                }
-                break;
-            case 4:
-                if (checkWinningPositions(winningPositions[2], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[3], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[4], this.activePlayer)  == activePlayer ||
-                        checkWinningPositions(winningPositions[6], this.activePlayer)  == activePlayer){
-                    winner = activePlayer;
-                }
-                break;
-            case 5:
-                if (checkWinningPositions(winningPositions[5], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[6], this.activePlayer) == activePlayer ){
-                    winner = activePlayer;
-                }
-                break;
-            case 6:
-                if (checkWinningPositions(winningPositions[1], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[4], this.activePlayer) == activePlayer ){
-                    winner = activePlayer;
-                }
-                break;
-            case 7:
-                if (checkWinningPositions(winningPositions[3], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[7], this.activePlayer) == activePlayer ){
-                    winner = activePlayer;
-                }
-                break;
-            case 8:
-                if (checkWinningPositions(winningPositions[2], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[5], this.activePlayer) == activePlayer ||
-                        checkWinningPositions(winningPositions[7], this.activePlayer)  == activePlayer){
-                    winner = activePlayer;
-                }
-                break;
-            default:
-                winner = -1;
+    public void reset(View view){
+        TextView winnerBanner = (TextView)findViewById( R.id.winner );
+        winnerBanner.setText(" ");
+        this.activePlayer = 0;
+        for(int i = 0; i < this.gameState.length; i++){
+            this.gameState[i] = -1;
         }
-
-        return winner;
+        android.support.v7.widget.GridLayout layout = (android.support.v7.widget.GridLayout)findViewById( R.id.gridLayout);
+        for(int i = 0; i < layout.getChildCount(); i++){
+            ((ImageView) layout.getChildAt( i )).setImageResource( 0 );
+        }
     }
 
-    public int checkWinningPositions(int[] check, int currPlayer){
-        int winner = -1;
-        if(gameState[check[0]] == currPlayer && gameState[check[1]] == currPlayer &&
-                gameState[check[2]] == currPlayer){
-            winner = currPlayer;
-        }
-
-        return  winner;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
